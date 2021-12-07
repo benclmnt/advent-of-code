@@ -1,40 +1,52 @@
 const std = @import("std");
 const min = std.math.min;
 const max = std.math.max;
+const Map = std.AutoHashMap;
+var gpa = std.heap.GeneralPurposeAllocator(.{}){};
 const FIELD_SIZE = 1000;
 
 const State = struct {
-    field: [FIELD_SIZE][FIELD_SIZE]u2 = .{.{0} ** FIELD_SIZE} ** FIELD_SIZE,
+    field: Map([2]u16, u2) = undefined,
     count: u32 = 0,
 
-    inline fn update(self: *State, i: u16, j: u16) void {
-        switch (self.field[i][j]) {
+    fn init(self: *State, allocator: *std.mem.Allocator) void {
+        self.field = Map([2]u16, u2).init(allocator);
+    }
+
+    fn deinit(self: *State) void {
+        self.field.deinit();
+    }
+
+    inline fn update(self: *State, i: u16, j: u16) !void {
+        var gop = try self.field.getOrPutValue(.{ i, j }, 0);
+
+        switch (gop.value_ptr.*) {
             2, 3 => return,
             1 => self.count += 1,
             0 => {},
         }
-        self.field[i][j] += 1;
+        gop.value_ptr.* += 1;
     }
 
-    fn horizontal(self: *State, start: [2]u16, end: [2]u16) void {
+    fn horizontal(self: *State, start: [2]u16, end: [2]u16) !void {
         if (start[0] == end[0]) {
             var j = min(start[1], end[1]);
             while (j <= max(start[1], end[1])) : (j += 1) {
-                self.update(start[0], j);
+                try self.update(start[0], j);
             }
         }
     }
 
-    fn vertical(self: *State, start: [2]u16, end: [2]u16) void {
+    fn vertical(self: *State, start: [2]u16, end: [2]u16) !void {
         if (start[1] == end[1]) {
             var i = min(start[0], end[0]);
             while (i <= max(start[0], end[0])) : (i += 1) {
-                self.update(i, start[1]);
+                try self.update(i, start[1]);
             }
         }
     }
 
-    fn diagonal(self: *State, start: [2]u16, end: [2]u16) void {
+    fn diagonal(self: *State, start: [2]u16, end: [2]u16) !void {
         if ((start[0] == end[0]) or (start[1] == end[1])) return;
         if (start[0] > end[0]) return self.diagonal(end, start);
         var i = start[0];
@@ -44,7 +56,7 @@ const State = struct {
             i += 1;
             j += delta;
         }) {
-            self.update(i, @intCast(u16, j));
+            try self.update(i, @intCast(u16, j));
         }
     }
 };
@@ -52,13 +64,15 @@ const State = struct {
 fn partOne(input: []const u8) !u32 {
     var coords = std.mem.tokenize(u8, input, "\n ->");
     var state = State{};
+    state.init(&gpa.allocator);
+    defer state.deinit();
 
     while (coords.next()) |s| {
         const start = try parseCoord(s);
         const end = try parseCoord(coords.next().?);
 
-        state.horizontal(start, end);
-        state.vertical(start, end);
+        try state.horizontal(start, end);
+        try state.vertical(start, end);
     }
     std.debug.print("{}\n", .{state.count});
     return state.count;
@@ -67,15 +81,17 @@ fn partOne(input: []const u8) !u32 {
 fn partTwo(input: []const u8) !u32 {
     var coords = std.mem.tokenize(u8, input, "\n ->");
     var state = State{};
+    state.init(&gpa.allocator);
+    defer state.deinit();
 
     while (coords.next()) |s| {
         const start = try parseCoord(s);
         const end = try parseCoord(coords.next().?);
 
-        state.horizontal(start, end);
-        state.vertical(start, end);
+        try state.horizontal(start, end);
+        try state.vertical(start, end);
         // only add this line for part 2.
-        state.diagonal(start, end);
+        try state.diagonal(start, end);
     }
     std.debug.print("{}\n", .{state.count});
     return state.count;
