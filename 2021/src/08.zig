@@ -45,84 +45,47 @@ inline fn getMask(input: []const u8) u7 {
     return bs.mask;
 }
 
-/// deduce patterns from input and output the translation from the patterns seen.
-fn deduce(input: []const u8) [10]u7 {
-    var translation: [10]u7 = undefined; // translate digits -> mask
-    var len_5: [3]u7 = undefined; // 2, 3, 5
-    var len_6: [3]u7 = undefined; // 0, 6, 9
-
-    {
-        var tokens = std.mem.tokenize(u8, input, " ");
-        var i: u8 = 0;
-        var j: u8 = 0;
-        var k: u8 = 0;
-        while (tokens.next()) |t| : (i += 1) {
-            var mask = getMask(t);
-            switch (t.len) {
-                2 => translation[1] = mask,
-                3 => translation[7] = mask,
-                4 => translation[4] = mask,
-                5 => {
-                    len_5[j] = mask;
-                    j += 1;
-                },
-                6 => {
-                    len_6[k] = mask;
-                    k += 1;
-                },
-                7 => translation[8] = mask,
-                else => unreachable,
-            }
-        }
-    }
-
-    for (len_6) |i| {
-        if (@popCount(u7, translation[1] ^ translation[7] | translation[4] ^ i) == 1) {
-            translation[9] = i;
-        } else if (i & translation[1] != translation[1]) {
-            translation[6] = i;
-        } else {
-            translation[0] = i;
-        }
-    }
-
-    for (len_5) |i| {
-        if (i & translation[1] == translation[1]) {
-            translation[3] = i;
-        } else if (@popCount(u7, translation[9] ^ translation[1] ^ i) == 1) {
-            translation[5] = i;
-        } else {
-            translation[2] = i;
-        }
-    }
-
-    return translation;
-}
-
-fn translate(input: []const u8, translation: [10]u7) u32 {
-    var tokens = std.mem.tokenize(u8, input, " ");
-    var digits: [4]u16 = undefined;
-
-    var i: u8 = 0;
-    while (tokens.next()) |t| : (i += 1) {
-        var mask = getMask(t);
-        for (translation) |tr, j| {
-            if (tr == mask) {
-                digits[i] = @intCast(u16, j);
-                break;
-            }
-        }
-    }
-    return 1000 * digits[0] + 100 * digits[1] + 10 * digits[2] + digits[3];
-}
-
 fn partTwo(input: []const u8) u32 {
     var lines = std.mem.tokenize(u8, input, "|\n\r");
     var total: u32 = 0;
 
     while (lines.next()) |patterns| {
-        var translation = deduce(patterns);
-        total += translate(lines.next().?, translation);
+        var tokens = std.mem.tokenize(u8, patterns, " ");
+        var four: u7 = undefined;
+        var seven: u7 = undefined;
+        while (tokens.next()) |t| {
+            var mask: u7 = getMask(t);
+            switch (t.len) {
+                3 => seven = mask,
+                4 => four = mask,
+                else => continue,
+            }
+        }
+
+        var number: u32 = 0;
+        tokens = std.mem.tokenize(u8, lines.next().?, " ");
+        while (tokens.next()) |t| {
+            var mask: u7 = getMask(t);
+            var digit: u8 = switch (t.len) {
+                2 => 1,
+                3 => 7,
+                4 => 4,
+                5 => blk: {
+                    if (mask & seven == seven) break :blk @as(u8, 3);
+                    if (@popCount(u7, mask & four) == 2) break :blk @as(u8, 2);
+                    break :blk @as(u8, 5);
+                },
+                6 => blk: {
+                    if (mask & seven != seven) break :blk @as(u8, 6);
+                    if (mask & four == four) break :blk @as(u8, 9);
+                    break :blk @as(u8, 0);
+                },
+                7 => 8,
+                else => unreachable,
+            };
+            number = number * 10 + digit;
+        }
+        total += number;
     }
     std.debug.print("{}\n", .{total});
     return total;
