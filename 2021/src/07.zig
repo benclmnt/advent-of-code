@@ -5,7 +5,7 @@ const min = std.math.min;
 const MAX_INPUT_VALUE = 2000;
 
 fn partOne(input: []const u8) !i32 {
-    var positions = std.AutoHashMap(i32, i32).init(&gpa.allocator);
+    var positions = std.AutoHashMap(i32, i32).init(gpa.allocator());
     defer positions.deinit();
 
     var token = std.mem.tokenize(u8, input, ",\n\r");
@@ -41,7 +41,7 @@ inline fn triangle(x: i32) i32 {
 }
 
 fn partTwo(input: []const u8) !i32 {
-    var positions = std.AutoArrayHashMap(i32, i32).init(&gpa.allocator);
+    var positions = std.AutoArrayHashMap(i32, i32).init(gpa.allocator());
     defer positions.deinit();
 
     var token = std.mem.tokenize(u8, input, ",\n\r");

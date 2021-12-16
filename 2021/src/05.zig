@@ -9,7 +9,7 @@ const State = struct {
     field: Map([2]u16, u2) = undefined,
     count: u32 = 0,
 
-    fn init(self: *State, allocator: *std.mem.Allocator) void {
+    fn init(self: *State, allocator: std.mem.Allocator) void {
         self.field = Map([2]u16, u2).init(allocator);
     }
 
@@ -64,7 +64,7 @@ const State = struct {
 fn partOne(input: []const u8) !u32 {
     var coords = std.mem.tokenize(u8, input, "\n ->");
     var state = State{};
-    state.init(&gpa.allocator);
+    state.init(gpa.allocator());
     defer state.deinit();
 
     while (coords.next()) |s| {
@@ -81,7 +81,7 @@ fn partOne(input: []const u8) !u32 {
 fn partTwo(input: []const u8) !u32 {
     var coords = std.mem.tokenize(u8, input, "\n ->");
     var state = State{};
-    state.init(&gpa.allocator);
+    state.init(gpa.allocator());
     defer state.deinit();
 
     while (coords.next()) |s| {
