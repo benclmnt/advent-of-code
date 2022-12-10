@@ -47,7 +47,7 @@ impl Iterator for Instruction {
 
 fn part_1(s: &str) -> i32 {
     let mut it = s.lines().flat_map(|line| {
-        let mut it = line.split(" ");
+        let mut it = line.split(' ');
         let inst = it.next().unwrap();
         if inst == "noop" {
             Instruction::new(InstructionType::Noop)
@@ -80,7 +80,7 @@ fn part_1(s: &str) -> i32 {
 
 fn part_2(s: &str) -> String {
     let mut it = s.lines().flat_map(|line| {
-        let mut it = line.split(" ");
+        let mut it = line.split(' ');
         let inst = it.next().unwrap();
         if inst == "noop" {
             Instruction::new(InstructionType::Noop)
@@ -128,6 +128,7 @@ fn main() {
     println!("Part 1: {}. Part 2: {}", part_1, part_2);
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 

@@ -5,11 +5,10 @@ fn part_1(data: &str) -> u32 {
 }
 
 fn part_2(data: &str) -> u32 {
-    let mut lines = data.lines();
     let mut i = 0;
     let mut tmp = ["", ""];
     let mut sum = 0;
-    while let Some(line) = lines.next() {
+    for line in data.lines() {
         if i == 2 {
             i = 0;
             sum += get_similar_part2(tmp[0], tmp[1], line);
@@ -23,8 +22,8 @@ fn part_2(data: &str) -> u32 {
 
 fn priority(c: char) -> u8 {
     match c {
-        'a'..='z' => (c as u8) - ('a' as u8) + 1,
-        'A'..='Z' => (c as u8) - ('A' as u8) + 27,
+        'a'..='z' => (c as u8) - b'a' + 1,
+        'A'..='Z' => (c as u8) - b'A' + 27,
         _ => 0,
     }
 }
@@ -57,6 +56,7 @@ fn main() {
     println!("Part 1: {}. Part 2: {}", part_1, part_2);
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 

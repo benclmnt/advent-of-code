@@ -17,6 +17,7 @@ struct Directory {
 }
 
 #[derive(Debug)]
+#[allow(dead_code)]
 struct File {
     name: String,
     size: u32,
@@ -44,7 +45,7 @@ fn process_in(s: &str) -> Data {
 
     let mut dir_stack = vec![];
     for line in s.lines() {
-        let tokens = line.split(" ").collect::<Vec<_>>();
+        let tokens = line.split(' ').collect::<Vec<_>>();
         if tokens[0] != "$" {
             if tokens[0] == "dir" {
                 // directory
@@ -148,6 +149,7 @@ fn main() {
     println!("Part 1: {}. Part 2: {}", part_1, part_2);
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 

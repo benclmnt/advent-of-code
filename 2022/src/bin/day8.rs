@@ -12,7 +12,7 @@ fn process_in(s: &str) -> Data {
 
 fn part_1_logic(
     data: &Data,
-    bitmap: &mut Vec<Vec<bool>>,
+    bitmap: &mut [Vec<bool>],
     count: &mut u32,
     i: usize,
     j: usize,
@@ -65,7 +65,7 @@ fn part_2(data: &Data) -> u32 {
         // l -> r
         let mut stack: Vec<(i8, usize)> = vec![(std::i8::MAX, 0)];
         for j in 0..data[i].len() {
-            let idx = stack.partition_point(|x| x.0 >= *&data[i][j]);
+            let idx = stack.partition_point(|x| x.0 >= data[i][j]);
             scores[i][j] *= j - stack[idx - 1].1;
             stack.resize(idx, (0, 0));
             stack.push((data[i][j], j));
@@ -74,7 +74,7 @@ fn part_2(data: &Data) -> u32 {
         // r -> l
         let mut stack: Vec<(i8, usize)> = vec![(std::i8::MAX, data[i].len() - 1)];
         for j in (0..data[i].len()).rev() {
-            let idx = stack.partition_point(|x| x.0 >= *&data[i][j]);
+            let idx = stack.partition_point(|x| x.0 >= data[i][j]);
             scores[i][j] *= stack[idx - 1].1 - j;
             stack.resize(idx, (0, 0));
             stack.push((data[i][j], j));
@@ -85,7 +85,7 @@ fn part_2(data: &Data) -> u32 {
         // t -> b
         let mut stack: Vec<(i8, usize)> = vec![(std::i8::MAX, 0)];
         for i in 0..data.len() {
-            let idx = stack.partition_point(|x| x.0 >= *&data[i][j]);
+            let idx = stack.partition_point(|x| x.0 >= data[i][j]);
             scores[i][j] *= i - stack[idx - 1].1;
             stack.resize(idx, (0, 0));
             stack.push((data[i][j], i));
@@ -94,7 +94,7 @@ fn part_2(data: &Data) -> u32 {
         // b -> t
         let mut stack: Vec<(i8, usize)> = vec![(std::i8::MAX, data[0].len() - 1)];
         for i in (0..data.len()).rev() {
-            let idx = stack.partition_point(|x| x.0 >= *&data[i][j]);
+            let idx = stack.partition_point(|x| x.0 >= data[i][j]);
             scores[i][j] *= stack[idx - 1].1 - i;
             max_score = std::cmp::max(max_score, scores[i][j]);
             stack.resize(idx, (0, 0));
@@ -113,6 +113,7 @@ fn main() {
     println!("Part 1: {}. Part 2: {}", part_1, part_2);
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 

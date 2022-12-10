@@ -38,17 +38,17 @@ fn part_1(s: &str) -> u32 {
     let mut visited = HashSet::with_capacity(2000);
     let mut head = Position { x: 0, y: 0 };
     let mut tail = Position { x: 0, y: 0 };
-    visited.insert(tail.clone());
+    visited.insert(tail);
 
     for line in s.lines() {
-        let mut it = line.split(" ");
+        let mut it = line.split(' ');
         let dir = it.next().unwrap();
         let distance = it.next().map(|x| x.parse::<i8>().unwrap()).unwrap();
 
         for _ in 0..distance {
             move_head(&mut head, dir);
             move_tail(&head, &mut tail);
-            visited.insert(tail.clone());
+            visited.insert(tail);
         }
     }
 
@@ -61,7 +61,7 @@ fn part_2(s: &str) -> u32 {
     visited.insert(Position { x: 0, y: 0 });
 
     for line in s.lines() {
-        let mut it = line.split(" ");
+        let mut it = line.split(' ');
         let dir = it.next().unwrap();
         let distance = it.next().map(|x| x.parse::<i8>().unwrap()).unwrap();
 
@@ -70,7 +70,7 @@ fn part_2(s: &str) -> u32 {
             for i in 1..knots.len() {
                 move_tail(&knots[i - 1].clone(), &mut knots[i]);
             }
-            visited.insert(knots[knots.len() - 1].clone());
+            visited.insert(knots[knots.len() - 1]);
         }
     }
 
@@ -84,6 +84,7 @@ fn main() {
     println!("Part 1: {}. Part 2: {}", part_1, part_2);
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 

@@ -17,7 +17,7 @@ fn part_2(movements: &str, supplies: &mut Supplies) -> String {
 fn print_results(supplies: &Supplies) -> String {
     let mut result = String::from("");
     supplies.data.iter().for_each(|x| {
-        if x.len() > 0 {
+        if !x.is_empty() {
             result.push(x[0] as char);
         }
     });
@@ -54,7 +54,7 @@ fn process_crate_line(supplies: &mut Supplies, s: &str) {
 }
 
 fn process_movement_line_crane_9000(supplies: &mut Supplies, s: &str) {
-    let tokens = s.split(" ").collect::<Vec<_>>();
+    let tokens = s.split(' ').collect::<Vec<_>>();
     let count = tokens[1].parse::<u32>().unwrap();
     let from = tokens[3].parse::<u32>().unwrap() - 1;
     let to = tokens[5].parse::<u32>().unwrap() - 1;
@@ -66,7 +66,7 @@ fn process_movement_line_crane_9000(supplies: &mut Supplies, s: &str) {
 }
 
 fn process_movement_line_crane_9001(supplies: &mut Supplies, s: &str) {
-    let tokens = s.split(" ").collect::<Vec<_>>();
+    let tokens = s.split(' ').collect::<Vec<_>>();
     let count = tokens[1].parse::<u32>().unwrap();
     let from = tokens[3].parse::<u32>().unwrap() - 1;
     let to = tokens[5].parse::<u32>().unwrap() - 1;
@@ -88,6 +88,7 @@ fn main() {
     println!("Part 1: {}. Part 2: {}", part_1, part_2);
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 

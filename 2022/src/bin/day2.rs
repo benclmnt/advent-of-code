@@ -38,8 +38,8 @@ fn part_1(input: &str) -> u32 {
         .lines()
         .map(|strat| {
             let x = strat
-                .split(" ")
-                .map(|m| Move::from(m)).collect::<Vec<_>>();
+                .split(' ')
+                .map(Move::from).collect::<Vec<_>>();
             (x[0], x[1])
         })
         .map(|res| 
@@ -57,7 +57,7 @@ fn part_2(input: &str) -> u32 {
     .lines()
     .map(|strat| {
         let x = strat
-            .split(" ").collect::<Vec<_>>();
+            .split(' ').collect::<Vec<_>>();
         match &x[..] {
             ["A", "X"] => (Move::Rock, Move::Scissor),
             ["A", "Y"] => (Move::Rock, Move::Rock),
@@ -89,6 +89,7 @@ fn main() {
     println!("Part 1: {}. Part 2: {}", part_1, part_2);
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 
